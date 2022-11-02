@@ -43,51 +43,6 @@ Expand the name of the chart.
 {{- end }}
 
 {{/*
-Build the appropriate spec.ref.{} given git branch, commit values
-*/}}
-{{- define "validRef" -}}
-{{- if .commit -}}
-{{- if not .branch -}}
-{{- fail "A valid branch is required when a commit is specified!" -}}
-{{- end -}}
-branch: {{ .branch | quote }}
-commit: {{ .commit }}
-{{- else if .semver -}}
-semver: {{ .semver | quote }}
-{{- else if .tag -}}
-tag: {{ .tag }}
-{{- else -}}
-branch: {{ .branch | quote }}
-{{- end -}}
-{{- end -}}
-
-{{/*
-Build the appropriate git credentials secret for private git repositories
-*/}}
-{{- define "gitCreds" -}}
-{{- if .Values.git.existingSecret -}}
-secretRef:
-  name: {{ .Values.git.existingSecret }}
-{{- else if coalesce .Values.git.credentials.username .Values.git.credentials.password .Values.git.credentials.caFile .Values.git.credentials.privateKey .Values.git.credentials.publicKey .Values.git.credentials.knownHosts "" -}}
-{{- /* Input validation happens in git-credentials.yaml template */ -}}
-secretRef:
-  name: {{ $.Release.Name }}-git-credentials
-{{- end -}}
-{{- end -}}
-
-{{/*
-Build common set of file extensions to include/exclude
-*/}}
-{{- define "gitIgnore" -}}
-  ignore: |
-    # exclude file extensions
-    /**/*.md
-    /**/*.txt
-    /**/*.sh
-    !/chart/tests/scripts/*.sh
-{{- end -}}
-
-{{/*
 Common labels for all objects
 */}}
 {{- define "commonLabels" -}}
@@ -110,3 +65,59 @@ stringData:
   overlays: |
     {{- toYaml .package.values | nindent 4 }}
 {{- end -}}
+
+{{/*
+Create a default fully qualified app name.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+If release name contains chart name it will be used as a full name.
+*/}}
+{{- define "service.fullname" -}}
+{{- if .Values.fullnameOverride }}
+{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
+{{- else }}
+{{- $name := default .Chart.Name .Values.nameOverride }}
+{{- if contains $name .Release.Name }}
+{{- .Release.Name | trunc 63 | trimSuffix "-" }}
+{{- else }}
+{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
+{{- end }}
+{{- end }}
+{{- end }}
+
+{{/*
+Create chart name and version as used by the chart label.
+*/}}
+{{- define "service.chart" -}}
+{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
+{{/*
+Common labels
+*/}}
+{{- define "service.labels" -}}
+helm.sh/chart: {{ include "service.chart" . }}
+{{ include "service.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+{{/*
+Selector labels
+*/}}
+{{- define "service.selectorLabels" -}}
+app: {{ include "service.fullname" . }}
+release: {{ .Release.Name }}
+{{- end }}
+
+{{/*
+Create the name of the service account to use
+*/}}
+{{- define "service.serviceAccountName" -}}
+{{- if .Values.serviceAccount.create }}
+{{- default (include "service.fullname" .) .Values.serviceAccount.name }}
+{{- else }}
+{{- default "default" .Values.serviceAccount.name }}
+{{- end }}
+{{- end }}
