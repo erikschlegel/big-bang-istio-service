@@ -1,0 +1,10 @@
+image:
+  repository: 
+  pullPolicy: Always
+  tag: 
+  pullSecret: private-registry
+containerPort: 80
+replicas: 2
+
+service:
+  port: 80
