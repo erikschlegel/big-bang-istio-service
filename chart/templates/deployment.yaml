@@ -22,7 +22,19 @@ spec:
         ports:
         - containerPort: {{ .Values.service.port }}
           protocol: TCP
-          name: http 
+          name: http
+        resources:
+          limits:
+            cpu: 1
+            memory: 1G
+          initialDelaySeconds: 2
+          periodSeconds: 2
+        readinessProbe:
+          httpGet:
+            path: /healthcheck
+            port: {{ .Values.service.port }}
+          initialDelaySeconds: 2
+          periodSeconds: 2
       imagePullSecrets:
         - name: {{ .Values.image.pullSecret }}
       restartPolicy: Always
