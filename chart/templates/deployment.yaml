@@ -28,6 +28,6 @@ spec:
         - containerPort: {{ .Values.containerPort }}
           protocol: TCP
           name: http 
-        imagePullSecrets:
-          - name: {{ .Values.image.pullSecret }}
+      imagePullSecrets:
+        - name: {{ .Values.image.pullSecret }}
       restartPolicy: Always
