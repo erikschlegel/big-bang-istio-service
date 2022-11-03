@@ -12,8 +12,6 @@ service:
 istio:
   gateways:
   - istio-system/main
-  hosts:
-  - {{ .Values.nameOverride }}.{{ .Values.hostname }}
 
 image:
   repository: rancher/hello-world
