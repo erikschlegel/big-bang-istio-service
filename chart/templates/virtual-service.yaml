@@ -1,3 +1,4 @@
+{{- if .Values.service.deployVirtualService }}
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
@@ -18,3 +19,4 @@ spec:
           port:
             number: {{ .Values.service.port }}
           host: {{ include "service.fullname" . }}.{{ default .Release.Namespace }}.svc.cluster.local
+{{- end }}
