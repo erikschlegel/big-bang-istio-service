@@ -35,6 +35,6 @@ spec:
             port: {{ .Values.service.port }}
           initialDelaySeconds: 2
           periodSeconds: 2
-      imagePullSecrets:
-        - name: {{ .Values.image.pullSecret }}
+#      imagePullSecrets:
+#        - name: {{ .Values.image.pullSecret }}
       restartPolicy: Always
