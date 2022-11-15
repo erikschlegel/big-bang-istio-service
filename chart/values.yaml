@@ -19,5 +19,5 @@ image:
   pullPolicy: Always
   tag: v0.1.2
 
-containerPort: 80
+virtualServicePort: 80
 replicas: 2
