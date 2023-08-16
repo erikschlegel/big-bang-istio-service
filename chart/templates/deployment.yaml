@@ -23,12 +23,12 @@ spec:
         - containerPort: {{ .Values.service.port }}
           protocol: TCP
           name: http
-        readinessProbe:
-          httpGet:
-            path: /healthcheck
-            port: {{ .Values.service.port }}
-          initialDelaySeconds: 2
-          periodSeconds: 2
+#        readinessProbe:
+#          httpGet:
+#            path: /healthcheck
+#            port: {{ .Values.service.port }}
+#          initialDelaySeconds: 2
+#          periodSeconds: 2
       {{- if .Values.image.pullSecret }}
       imagePullSecrets:
         - name: {{ .Values.image.pullSecret }}
