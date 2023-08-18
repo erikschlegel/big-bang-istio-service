@@ -18,6 +18,15 @@ image:
   repository: rancher/hello-world
   pullPolicy: Always
   tag: v0.1.2
+  includeReadinessProbe: false
 
 virtualServicePort: 80
 replicas: 2
+
+secretStore:
+  provider: azure
+  enabled: true
+  usePodIdentity: false
+  useVMManagedIdentity: true
+  secrets:
+  identity:
